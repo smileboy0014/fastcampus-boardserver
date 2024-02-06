@@ -1,8 +1,9 @@
-package com.fastcampus.boardserver.service;
+package com.fastcampus.boardserver.service.impl;
 
 import com.fastcampus.boardserver.dto.UserDTO;
 import com.fastcampus.boardserver.exception.DuplicateIdException;
 import com.fastcampus.boardserver.mapper.UserProfileMapper;
+import com.fastcampus.boardserver.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

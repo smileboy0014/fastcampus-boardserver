@@ -1,5 +1,4 @@
-package com.fastcampus.boardserver.dto;
-
+package com.fastcampus.boardserver.dto.request;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -7,9 +6,9 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class UserLoginRequest {
+public class UserDeleteId {
     @NonNull
-    private String userId;
+    private String id;
     @NonNull
     private String password;
 }
