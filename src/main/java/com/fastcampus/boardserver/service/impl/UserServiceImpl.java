@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void register(UserDTO userProfile) {
 
-        boolean dupIdResult = isDuplicatedId(userProfile.getUserID());
+        boolean dupIdResult = isDuplicatedId(userProfile.getUserId());
 
         if (dupIdResult) {
             throw new DuplicateIdException("중복된 아이디입니다.");
@@ -43,19 +43,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO login(String id, String password) {
         String cryptoPassword = encryptSHA256(password);
-        UserDTO memberInfo = userProfileMapper.findByIdAndPassword(id, cryptoPassword);
+        UserDTO memberInfo = userProfileMapper.findByUserIdAndPassword(id, cryptoPassword);
 
         return memberInfo;
     }
 
     @Override
-    public boolean isDuplicatedId(String id) {
-        return userProfileMapper.idCheck(id) == 1;
+    public boolean isDuplicatedId(String userId) {
+        return userProfileMapper.idCheck(userId) == 1;
     }
 
     @Override
     public UserDTO getUserInfo(String userId) {
-        return null;
+        return userProfileMapper.getUserProfile(userId);
     }
 
     @Override

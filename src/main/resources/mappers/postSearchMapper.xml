@@ -52,7 +52,7 @@
                p.fileId,
                p.updateTime
         FROM post p
-                 JOIN posttag pt ON p.id = pt.postId
+                 JOIN postTag pt ON p.id = pt.postId
                  JOIN tag t ON pt.tagId = t.id
         WHERE t.name = #{tagName}
     </select>

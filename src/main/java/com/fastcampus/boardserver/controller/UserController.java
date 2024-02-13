@@ -41,11 +41,13 @@ public class UserController {
         String userId = loginRequest.getUserId();
         String password = loginRequest.getPassword();
         UserDTO userInfo = userService.login(userId, password);
-        String id = String.valueOf(userInfo.getId());
+
 
         if (userInfo == null) {
             return HttpStatus.NOT_FOUND;
         } else if (userInfo != null) {
+            String id = String.valueOf(userInfo.getId());
+
             LoginResponse loginResponse = LoginResponse.success(userInfo);
             if (userInfo.getStatus() == (UserDTO.Status.ADMIN)) {
                 SessionUtil.setLoginAdminId(session, id);
@@ -68,12 +70,12 @@ public class UserController {
         return new UserInfoResponse(memberInfo);
     }
 
-    @PutMapping("logout")
+    @PutMapping("/logout")
     public void logout(HttpSession session) {
         SessionUtil.clear(session);
     }
 
-    @PatchMapping("password")
+    @PatchMapping("/password")
     @LoginCheck(type = LoginCheck.UserType.USER)
     public ResponseEntity<LoginResponse> updateUserPassword(String accountId, @RequestBody UserUpdatePasswordRequest userUpdatePasswordRequest,
                                                             HttpSession session) {

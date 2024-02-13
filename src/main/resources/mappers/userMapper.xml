@@ -26,7 +26,7 @@
     <delete id="deleteUserProfile">
         DELETE
         FROM user
-        WHERE userId = #{id}
+        WHERE id = #{id}
     </delete>
 
     <insert id="register" parameterType="com.fastcampus.boardserver.dto.UserDTO">

@@ -13,17 +13,15 @@ import java.util.Date;
 public class UserDTO {
 
     public static boolean hasNullDataBeforeRegister(UserDTO userDTO) {
-        return userDTO.getUserID() == null || userDTO.getPassword() == null || userDTO.getNickName() == null;
+        return userDTO.getUserId() == null || userDTO.getPassword() == null || userDTO.getNickName() == null;
     }
 
     public enum Status {
         DEFAULT, ADMIN, DELETED
     }
 
-
     private int id;
-
-    private String userID;
+    private String userId;
     private String password;
     private String nickName;
     private boolean isAdmin;

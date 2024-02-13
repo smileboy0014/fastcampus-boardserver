@@ -20,7 +20,7 @@ public class PostSearchServiceImpl implements PostSearchService {
     private final PostSearchMapper postSearchMapper;
 
 
-    @Cacheable(value = "getProducts", key = "'getProducts' + #postSearchRequest.getName() + #postSearchRequest.getCategoryId()")
+    @Cacheable(unless="#result == null", value = "getProducts", key = "'getProducts' + #postSearchRequest.getName() + #postSearchRequest.getCategoryId()")
     @Override
     public List<PostDTO> getProducts(PostSearchRequest postSearchRequest) {
         List<PostDTO> postDTOList = null;

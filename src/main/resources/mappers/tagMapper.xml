@@ -30,7 +30,7 @@
 
 
     <insert id="createPostTag">
-        INSERT INTO posttag(tagId, postId)
+        INSERT INTO postTag(tagId, postId)
         VALUES (#{tagId}, #{postId});
     </insert>
 </mapper>
