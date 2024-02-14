@@ -28,7 +28,7 @@ logging:
     web: debug
 
 expire:
-  defaultTime: 3600 #1?
+  defaultTime: 600 #레디스 만료시간 10분으로 설정(성능향상을 위해)
 
 mybatis:
   mapper-locations:classpath:com.fastcampus.boardserver.mapper/*.xml
