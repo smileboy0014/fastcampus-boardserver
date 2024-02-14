@@ -4,6 +4,7 @@ import com.fastcampus.boardserver.dto.CommentDTO;
 import com.fastcampus.boardserver.dto.PostDTO;
 import com.fastcampus.boardserver.dto.TagDTO;
 import com.fastcampus.boardserver.dto.UserDTO;
+import com.fastcampus.boardserver.exception.BoardServerException;
 import com.fastcampus.boardserver.mapper.CommentMapper;
 import com.fastcampus.boardserver.mapper.PostMapper;
 import com.fastcampus.boardserver.mapper.TagMapper;
@@ -12,6 +13,7 @@ import com.fastcampus.boardserver.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -30,7 +32,7 @@ public class PostServiceImpl implements PostService {
 
     private final TagMapper tagMapper;
 
-    @CacheEvict(value="getProducts", allEntries = true)
+    @CacheEvict(value = "getProducts", allEntries = true)
     @Override
     public void register(String id, PostDTO postDTO) {
         UserDTO memberInfo = userProfileMapper.getUserProfile(id);
@@ -38,15 +40,11 @@ public class PostServiceImpl implements PostService {
         postDTO.setCreateTime(new Date());
 
         if (memberInfo != null) {
-            postMapper.register(postDTO);
-            Integer postId = postDTO.getId();
-            // 생성된 post 객체 에서 태그 리스트 생성
-            for(int i=0; i<postDTO.getTagDTOList().size(); i++){
-                TagDTO tagDTO = postDTO.getTagDTOList().get(i);
-                tagMapper.register(tagDTO);
-                Integer tagId = tagDTO.getId();
-                // M:N 관계 테이블 생성
-                tagMapper.createPostTag(tagId, postId);
+            try {
+                postMapper.register(postDTO);
+            } catch (RuntimeException e) {
+                log.error("register 실패");
+                throw new BoardServerException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
             }
         } else {
             log.error("register ERROR! {}", postDTO);
@@ -56,14 +54,25 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostDTO> getMyProducts(int accountId) {
-        List<PostDTO> postDTOList = postMapper.selectMyProducts(accountId);
+        List<PostDTO> postDTOList = null;
+        try {
+            postDTOList = postMapper.selectMyProducts(accountId);
+        } catch (RuntimeException e) {
+            log.error("getMyProducts 실패");
+            throw new BoardServerException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
         return postDTOList;
     }
 
     @Override
     public void updateProducts(PostDTO postDTO) {
         if (postDTO != null && postDTO.getId() != 0 && postDTO.getUserId() != 0) {
-            postMapper.updateProducts(postDTO);
+            try {
+                postMapper.updateProducts(postDTO);
+            } catch (RuntimeException e) {
+                log.error("updateProducts 실패");
+                throw new BoardServerException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            }
         } else {
             log.error("updateProducts ERROR! {}", postDTO);
             throw new RuntimeException("updateProducts ERROR! 물품 변경 메서드를 확인해주세요\n" + "Params : " + postDTO);
@@ -73,7 +82,12 @@ public class PostServiceImpl implements PostService {
     @Override
     public void deleteProduct(int userId, int productId) {
         if (userId != 0 && productId != 0) {
-            postMapper.deleteProduct(productId);
+            try {
+                postMapper.deleteProduct(productId);
+            } catch (RuntimeException e) {
+                log.error("deleteProduct 실패");
+                throw new BoardServerException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            }
         } else {
             log.error("deleteProudct ERROR! {}", productId);
             throw new RuntimeException("updateProducts ERROR! 물품 삭제 메서드를 확인해주세요\n" + "Params : " + productId);
@@ -83,7 +97,12 @@ public class PostServiceImpl implements PostService {
     @Override
     public void registerComment(CommentDTO commentDTO) {
         if (commentDTO.getPostId() != 0) {
-            commentMapper.register(commentDTO);
+            try {
+                commentMapper.register(commentDTO);
+            } catch (RuntimeException e) {
+                log.error("register 실패");
+                throw new BoardServerException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            }
         } else {
             log.error("registerComment ERROR! {}", commentDTO);
             throw new RuntimeException("registerComment ERROR! 댓글 추가 메서드를 확인해주세요\n" + "Params : " + commentDTO);
@@ -93,16 +112,27 @@ public class PostServiceImpl implements PostService {
     @Override
     public void updateComment(CommentDTO commentDTO) {
         if (commentDTO != null) {
-            commentMapper.updateComments(commentDTO);
+            try {
+                commentMapper.updateComments(commentDTO);
+            } catch (RuntimeException e) {
+                log.error("updateComments 실패");
+                throw new BoardServerException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            }
         } else {
             log.error("updateComment ERROR! {}", commentDTO);
             throw new RuntimeException("updateComment ERROR! 댓글 변경 메서드를 확인해주세요\n" + "Params : " + commentDTO);
         }
     }
+
     @Override
     public void deletePostComment(int userId, int commentId) {
         if (userId != 0 && commentId != 0) {
-            commentMapper.deletePostComment(commentId);
+            try {
+                commentMapper.deletePostComment(commentId);
+            } catch (RuntimeException e) {
+                log.error("deletePostComment 실패");
+                throw new BoardServerException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            }
         } else {
             log.error("deletePostComment ERROR! {}", commentId);
             throw new RuntimeException("deletePostComment ERROR! 댓글 삭제 메서드를 확인해주세요\n" + "Params : " + commentId);
@@ -112,7 +142,12 @@ public class PostServiceImpl implements PostService {
     @Override
     public void registerTag(TagDTO tagDTO) {
         if (tagDTO.getPostId() != 0) {
-            tagMapper.register(tagDTO);
+            try {
+                tagMapper.register(tagDTO);
+            } catch (RuntimeException e) {
+                log.error("register 실패");
+                throw new BoardServerException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            }
         } else {
             log.error("registerTag ERROR! {}", tagDTO);
             throw new RuntimeException("registerTag ERROR! 태그 추가 메서드를 확인해주세요\n" + "Params : " + tagDTO);
@@ -122,7 +157,12 @@ public class PostServiceImpl implements PostService {
     @Override
     public void updateTag(TagDTO tagDTO) {
         if (tagDTO != null) {
-            tagMapper.updateTags(tagDTO);
+            try {
+                tagMapper.updateTags(tagDTO);
+            } catch (RuntimeException e) {
+                log.error("updateTags 실패");
+                throw new BoardServerException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            }
         } else {
             log.error("updateTag ERROR! {}", tagDTO);
             throw new RuntimeException("updateTag ERROR! 태그 변경 메서드를 확인해주세요\n" + "Params : " + tagDTO);
@@ -132,7 +172,12 @@ public class PostServiceImpl implements PostService {
     @Override
     public void deletePostTag(int userId, int tagId) {
         if (userId != 0 && tagId != 0) {
-            tagMapper.deletePostTag(tagId);
+            try {
+                tagMapper.deletePostTag(tagId);
+            } catch (RuntimeException e) {
+                log.error("deletePostTag 실패");
+                throw new BoardServerException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            }
         } else {
             log.error("deletePostTag ERROR! {}", tagId);
             throw new RuntimeException("deletePostTag ERROR! 태그 삭제 메서드를 확인해주세요\n" + "Params : " + tagId);
